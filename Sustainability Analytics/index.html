@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NeuraFleet Aerial - Interactive Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Leaflet CSS for the interactive map -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="sidebar">
+        <div class="logo">NF</div>
+        <a class="nav-item active" data-view="dashboard">
+            <span>📊</span>
+            <span class="nav-label">Dashboard</span>
+        </a>
+        <a class="nav-item" data-view="fleet">
+            <span>🚁</span>
+            <span class="nav-label">Fleet Details</span>
+        </a>
+        <a class="nav-item">
+            <span>📈</span>
+            <span class="nav-label">Analytics</span>
+        </a>
+        <a class="nav-item">
+            <span>⚙️</span>
+            <span class="nav-label">Settings</span>
+        </a>
+    </div>
+
+    <div class="main-content">
+        <header class="header">
+            <div class="header-left">
+                <h1>Sustainability Analytics</h1>
+                <p class="subtitle">Real-time environmental impact tracking for NeuraFleet Aerial</p>
+            </div>
+            <div class="header-right">
+                <div class="datetime">
+                    <div class="date">October 19, 2025</div>
+                    <div class="time" id="current-time">11:02 AM</div>
+                </div>
+                <div class="user-avatar">MA</div>
+            </div>
+        </header>
+
+        <!-- Main Dashboard View -->
+        <div id="dashboard-view" class="view active">
+            <div class="filters">
+                <div class="filter-group">
+                    <label>Timeframe</label>
+                    <div class="filter-buttons">
+                        <button class="filter-btn active" data-filter="day">Day</button>
+                        <button class="filter-btn" data-filter="week">Week</button>
+                        <button class="filter-btn" data-filter="month">Month</button>
+                    </div>
+                </div>
+                <div class="filter-group">
+                    <label>Fleet Mode</label>
+                    <div class="filter-buttons">
+                        <button class="filter-btn-mode active" data-mode="all">All</button>
+                        <button class="filter-btn-mode" data-mode="drone">Drones</button>
+                        <button class="filter-btn-mode" data-mode="bike">Bikes</button>
+                        <button class="filter-btn-mode" data-mode="van">Vans</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="dashboard-grid">
+                <!-- CO2 Saved Card -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon icon-green">🍃</div>
+                        <div class="card-title">CO₂ Saved (kg)</div>
+                    </div>
+                    <div class="card-body">
+                        <div id="co2-saved" class="metric-large positive" data-target="188">0</div>
+                        <div class="metric-subtitle">vs. traditional fleet</div>
+                        <div class="chart-container">
+                            <canvas id="co2Chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sustainability Simulator Card -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon icon-purple">⚖️</div>
+                        <div class="card-title">Sustainability Simulator</div>
+                    </div>
+                    <div class="card-body">
+                        <div class="comparison-display">
+                            <div>
+                                <div class="metric-subtitle">Traditional Fleet</div>
+                                <div id="traditional-co2" class="metric-large negative" style="font-size: 32px;">342 kg</div>
+                            </div>
+                            <div>
+                                <div class="metric-subtitle">NeuraFleet</div>
+                                <div id="neurafleet-co2" class="metric-large positive" style="font-size: 32px;">188 kg</div>
+                            </div>
+                        </div>
+                        <input type="range" id="carbon-slider" class="carbon-slider" min="0" max="100" value="42">
+                        <div id="slider-label" class="metric-subtitle" style="text-align: center; margin-top: 8px;">Simulating 42% Drone Adoption</div>
+                    </div>
+                </div>
+
+                <!-- Traffic Reduction Card -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon icon-blue">🚗</div>
+                        <div class="card-title">Vehicles Off-Road</div>
+                    </div>
+                    <div class="card-body">
+                        <div id="vehicles-off-road" class="metric-large positive" data-target="45">0</div>
+                        <div class="metric-subtitle">in peak hours</div>
+                        <div class="progress-bar">
+                            <div id="traffic-progress" class="progress-fill green" style="width: 78%;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                 <!-- Interactive Map Card -->
+                <div class="card card-wide">
+                    <div class="card-header">
+                        <div class="card-icon icon-purple">🗺️</div>
+                        <div class="card-title">Live Operations Map - Dubai</div>
+                        <button id="playback-btn" class="playback-button">▶ Play Day's Operations</button>
+                    </div>
+                    <div class="card-body">
+                       <div id="map" class="map-container"></div>
+                    </div>
+                </div>
+                
+                <!-- Delivery Mode Breakdown Card -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon icon-orange">📊</div>
+                        <div class="card-title">Delivery Mode Breakdown</div>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container-large">
+                            <canvas id="deliveryChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Fleet Details View -->
+        <div id="fleet-view" class="view">
+            <div class="fleet-table-container">
+                <h2>Live Fleet Status</h2>
+                <table id="fleet-table">
+                    <thead>
+                        <tr>
+                            <th data-sort="id">Unit ID ▾</th>
+                            <th data-sort="type">Type ▾</th>
+                            <th data-sort="status">Status ▾</th>
+                            <th data-sort="energy">Energy/Battery ▾</th>
+                            <th data-sort="distance">Distance (km) ▾</th>
+                        </tr>
+                    </thead>
+                    <tbody id="fleet-table-body">
+                        <!-- Rows will be injected by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Side Panel for individual vehicle details -->
+    <div id="details-panel" class="details-panel">
+        <button id="close-panel-btn" class="close-btn">&times;</button>
+        <div id="panel-content">
+            <!-- Details will be injected by JavaScript -->
+        </div>
+    </div>
+
+
+    <!-- Leaflet JS for the map -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <!-- Our new dashboard logic -->
+    <script src="dashboard.js"></script>
+</body>
+</html>
