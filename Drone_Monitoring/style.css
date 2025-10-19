@@ -1,0 +1,339 @@
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Urbanist', sans-serif;
+            background: #ebedf1;
+            color: #2a2a2a;
+            overflow-x: hidden;
+        }
+
+        .navbar {
+            background: #ebedf1;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .nav-btn {
+            padding: 12px 32px;
+            margin-top: 25px;
+            border: none;
+            border-radius: 20px;
+            font-family: 'Urbanist', sans-serif;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: white;
+            color: #6b6b6b;
+        }
+
+        .nav-btn.active {
+            background: #3e30d9;
+            color: white;
+            box-shadow: 0 4px 16px rgba(62, 48, 217, 0.3);
+        }
+
+        .nav-btn:hover:not(.active) {
+            background: #f1f3f7;
+            color: #3e30d9;
+            box-shadow: 0 4px 16px rgba(62, 48, 217, 0.3);
+        }
+
+        .container {
+            padding: 32px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            height: calc(100vh - 88px);
+            max-height: calc(100vh - 88px);
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+        }
+
+        .main-feed {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .main-feed .image-container {
+            flex: 1;
+            background: linear-gradient(135deg, #e8e6fd 0%, #f1f3f7 100%);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #a0a0a0;
+            font-size: 18px;
+            font-weight: 500;
+            min-height: 0;
+            max-height: 180vh;
+            overflow: hidden;
+        }
+
+        .main-feed .image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 14px;
+        }
+
+        .right-panel {
+            display: grid;
+            grid-template-rows: 1fr 1fr;
+            gap: 24px;
+        }
+
+        .top-card {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .drone-image {
+            width: 100%;
+            object-fit: fill;
+            background: linear-gradient(135deg, #e8e6fd 0%, #f1f3f7 100%);
+            border-radius: 16px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #a0a0a0;
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        .status-section {
+            flex: 1;
+        }
+
+        .section-title {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: #2a2a2a;
+        }
+
+        .status-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: #eeeff0;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .status-item:hover {
+            background: #f1f3f7;
+            transform: translateY(-2px);
+        }
+
+        .status-info {
+            flex: 1;
+        }
+
+        .status-label {
+            font-size: 12px;
+            color: #8a8a8a;
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+
+        .status-value {
+            font-size: 16px;
+            font-weight: 700;
+            color: #2a2a2a;
+        }
+
+        .battery-gauge {
+            width: 100%;
+            height: 6px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 6px;
+        }
+
+        .battery-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #51b206 0%, #6dd108 100%);
+            width: 87%;
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+
+        .signal-bars {
+            display: flex;
+            gap: 3px;
+            margin-top: 6px;
+        }
+
+        .signal-bar {
+            width: 6px;
+            height: 16px;
+            background: #e0e0e0;
+            border-radius: 2px;
+        }
+
+        .signal-bar.active {
+            background: linear-gradient(180deg, #00c7be 0%, #00e7d8 100%);
+        }
+
+        .emergency-card {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .emergency-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .emergency-btn {
+            padding: 16px;
+            border: none;
+            border-radius: 14px;
+            font-family: 'Urbanist', sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .emergency-btn.primary {
+            background: #3e30d9;
+            color: white;
+        }
+
+        .emergency-btn.primary:hover {
+            background: #341fa8;
+            box-shadow: 0 6px 20px rgba(62, 48, 217, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .emergency-btn.danger {
+            background: #ff4c4c;
+            color: white;
+        }
+
+        .emergency-btn.danger:hover {
+            background: #e63939;
+            box-shadow: 0 6px 20px rgba(255, 76, 76, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .emergency-btn.success {
+            background: #51b206;
+            color: white;
+        }
+
+        .emergency-btn.success:hover {
+            background: #429005;
+            box-shadow: 0 6px 20px rgba(81, 178, 6, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .emergency-btn:active {
+            transform: translateY(0);
+        }
+
+        .divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent 0%, #e0e0e0 50%, transparent 100%);
+            margin: 20px 0;
+        }
+
+        .alerts {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .alert-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 16px;
+            border-radius: 12px;
+            background: #eeeff0;
+            transition: all 0.3s ease;
+        }
+
+        .alert-item:hover {
+            background: #f1f3f7;
+        }
+
+        .alert-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .alert-icon {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .alert-icon.clear {
+            background: #51b206;
+            box-shadow: 0 0 10px rgba(81, 178, 6, 0.4);
+        }
+
+        .alert-icon.warning {
+            background: #ff9500;
+            box-shadow: 0 0 10px rgba(255, 149, 0, 0.4);
+        }
+
+        .alert-text {
+            font-size: 14px;
+            font-weight: 600;
+            color: #2a2a2a;
+        }
+
+        .alert-status {
+            font-size: 12px;
+            font-weight: 600;
+            padding: 6px 14px;
+            border-radius: 20px;
+        }
+
+        .alert-status.clear {
+            background: #e8f5e9;
+            color: #51b206;
+        }
+
+        .alert-status.warning {
+            background: #fff4e5;
+            color: #ff9500;
+        }
+
+        @media (max-width: 1200px) {
+            .container {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto auto;
+                height: auto;
+            }
+        }
