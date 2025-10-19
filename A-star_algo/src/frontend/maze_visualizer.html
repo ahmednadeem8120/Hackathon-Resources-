@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A* Maze Solver</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #00ff88, #00ccff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            color: #aaaaaa;
+            font-size: 1.1em;
+        }
+
+        .controls {
+            background: #252525;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .file-input-wrapper {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .file-input-label {
+            background: linear-gradient(135deg, #00ff88 0%, #00ccff 100%);
+            color: #000;
+            padding: 12px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .file-input-label:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(0, 255, 136, 0.4);
+        }
+
+        #fileInput {
+            display: none;
+        }
+
+        .file-name {
+            color: #00ff88;
+            font-weight: 500;
+        }
+
+        button {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1em;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(255, 107, 107, 0.4);
+        }
+
+        button:disabled {
+            background: #555;
+            cursor: not-allowed;
+        }
+
+        .stats {
+            background: #252525;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .stat-box {
+            background: #1a1a1a;
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 4px solid #00ff88;
+        }
+
+        .stat-label {
+            color: #888;
+            font-size: 0.9em;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #00ff88;
+        }
+
+        .maze-container {
+            background: #252525;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            overflow: auto;
+        }
+
+        #mazeCanvas {
+            display: block;
+            margin: 0 auto;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .legend-color {
+            width: 30px;
+            height: 30px;
+            border-radius: 5px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .wall { background: #1a1a1a; }
+        .empty { background: #3a3a3a; }
+        .start { background: #4a90e2; }
+        .goal { background: #f39c12; }
+        .explored { background: #e74c3c; }
+        .solution { background: #2ecc71; }
+
+        .loading {
+            text-align: center;
+            color: #00ff88;
+            font-size: 1.2em;
+            padding: 20px;
+        }
+
+        .error {
+            background: #ff6b6b;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Optimum Path using A* Algorithm</h1>
+            <p class="subtitle">Visualize pathfinding with the A* algorithm</p>
+        </header>
+
+        <div class="controls">
+            <div class="file-input-wrapper">
+                <label for="fileInput" class="file-input-label">
+                    📍Choose the Delivery Location
+                </label>
+                <input type="file" id="fileInput" accept=".txt">
+                <span class="file-name" id="fileName">No file selected</span>
+                <button id="solveBtn" disabled>Find the path</button>
+            </div>
+        </div>
+
+        <div id="errorMsg" class="error" style="display: none;"></div>
+
+        <div class="stats" id="stats" style="display: none;">
+            <div class="stat-box">
+                <div class="stat-label">Maze Size</div>
+                <div class="stat-value" id="mazeSize">-</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">States Explored</div>
+                <div class="stat-value" id="statesExplored">-</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">Solution Length</div>
+                <div class="stat-value" id="solutionLength">-</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">Algorithm</div>
+                <div class="stat-value" style="font-size: 1.5em;">A*</div>
+            </div>
+        </div>
+
+        <div class="maze-container">
+            <canvas id="mazeCanvas"></canvas>
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="legend-color wall"></div>
+                    <span>Wall</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color empty"></div>
+                    <span>Empty</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color start"></div>
+                    <span>Start (A)</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color goal"></div>
+                    <span>Goal (B)</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color explored"></div>
+                    <span>Explored</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color solution"></div>
+                    <span>Optimum Calculated Path</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const fileInput = document.getElementById('fileInput');
+        const fileName = document.getElementById('fileName');
+        const solveBtn = document.getElementById('solveBtn');
+        const canvas = document.getElementById('mazeCanvas');
+        const ctx = canvas.getContext('2d');
+        const errorMsg = document.getElementById('errorMsg');
+        const stats = document.getElementById('stats');
+
+        let mazeData = null;
+
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                fileName.textContent = file.name;
+                solveBtn.disabled = false;
+                errorMsg.style.display = 'none';
+                
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    mazeData = event.target.result;
+                    parseMaze(mazeData);
+                };
+                reader.readAsText(file);
+            }
+        });
+
+        solveBtn.addEventListener('click', () => {
+            if (mazeData) {
+                solveMaze(mazeData);
+            }
+        });
+
+        function parseMaze(content) {
+            const lines = content.trim().split('\n');
+            const height = lines.length;
+            const width = Math.max(...lines.map(line => line.length));
+
+            const walls = [];
+            let start = null;
+            let goal = null;
+
+            for (let i = 0; i < height; i++) {
+                const row = [];
+                for (let j = 0; j < width; j++) {
+                    const char = lines[i][j] || ' ';
+                    if (char === 'A') {
+                        start = [i, j];
+                        row.push(false);
+                    } else if (char === 'B') {
+                        goal = [i, j];
+                        row.push(false);
+                    } else if (char === ' ') {
+                        row.push(false);
+                    } else {
+                        row.push(true);
+                    }
+                }
+                walls.push(row);
+            }
+
+            drawMaze(walls, start, goal, [], []);
+            document.getElementById('mazeSize').textContent = `${height} × ${width}`;
+            stats.style.display = 'grid';
+        }
+
+        function solveMaze(content) {
+            // Simulate A* algorithm
+            const lines = content.trim().split('\n');
+            const height = lines.length;
+            const width = Math.max(...lines.map(line => line.length));
+
+            const walls = [];
+            let start = null;
+            let goal = null;
+
+            for (let i = 0; i < height; i++) {
+                const row = [];
+                for (let j = 0; j < width; j++) {
+                    const char = lines[i][j] || ' ';
+                    if (char === 'A') {
+                        start = [i, j];
+                        row.push(false);
+                    } else if (char === 'B') {
+                        goal = [i, j];
+                        row.push(false);
+                    } else if (char === ' ') {
+                        row.push(false);
+                    } else {
+                        row.push(true);
+                    }
+                }
+                walls.push(row);
+            }
+
+            // Run A* algorithm
+            const result = astar(walls, start, goal);
+            
+            if (result) {
+                document.getElementById('statesExplored').textContent = result.explored.length;
+                document.getElementById('solutionLength').textContent = result.solution.length;
+                drawMaze(walls, start, goal, result.explored, result.solution);
+            } else {
+                showError('No solution found!');
+            }
+        }
+
+        function astar(walls, start, goal) {
+            const height = walls.length;
+            const width = walls[0].length;
+            
+            const heuristic = (a, b) => {
+                return Math.sqrt((a[0] - b[0]) ** 2 + (a[1] - b[1]) ** 2);
+            };
+
+            const getNeighbors = (state) => {
+                const [row, col] = state;
+                const candidates = [
+                    [row - 1, col], // up
+                    [row + 1, col], // down
+                    [row, col - 1], // left
+                    [row, col + 1]  // right
+                ];
+
+                return candidates.filter(([r, c]) => 
+                    r >= 0 && r < height && c >= 0 && c < width && !walls[r][c]
+                );
+            };
+
+            const frontier = [[heuristic(start, goal), 0, start, []]];
+            const explored = new Set();
+            const exploredList = [];
+
+            while (frontier.length > 0) {
+                frontier.sort((a, b) => a[0] - b[0]);
+                const [f, g, current, path] = frontier.shift();
+                
+                const key = `${current[0]},${current[1]}`;
+                if (explored.has(key)) continue;
+                
+                explored.add(key);
+                exploredList.push(current);
+
+                if (current[0] === goal[0] && current[1] === goal[1]) {
+                    return {
+                        solution: [...path, current],
+                        explored: exploredList
+                    };
+                }
+
+                for (const neighbor of getNeighbors(current)) {
+                    const neighborKey = `${neighbor[0]},${neighbor[1]}`;
+                    if (!explored.has(neighborKey)) {
+                        const newG = g + 1;
+                        const newH = heuristic(neighbor, goal);
+                        const newF = newG + newH;
+                        frontier.push([newF, newG, neighbor, [...path, current]]);
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        function drawMaze(walls, start, goal, explored, solution) {
+            const cellSize = 30;
+            const height = walls.length;
+            const width = walls[0].length;
+
+            canvas.width = width * cellSize;
+            canvas.height = height * cellSize;
+
+            const exploredSet = new Set(explored.map(e => `${e[0]},${e[1]}`));
+            const solutionSet = new Set(solution.map(s => `${s[0]},${s[1]}`));
+
+            for (let i = 0; i < height; i++) {
+                for (let j = 0; j < width; j++) {
+                    let color;
+                    const key = `${i},${j}`;
+
+                    if (walls[i][j]) {
+                        color = '#1a1a1a'; // Wall
+                    } else if (start && i === start[0] && j === start[1]) {
+                        color = '#4a90e2'; // Start (blue)
+                    } else if (goal && i === goal[0] && j === goal[1]) {
+                        color = '#f39c12'; // Goal (orange)
+                    } else if (solutionSet.has(key)) {
+                        color = '#2ecc71'; // Solution (green)
+                    } else if (exploredSet.has(key)) {
+                        color = '#e74c3c'; // Explored (red)
+                    } else {
+                        color = '#3a3a3a'; // Empty
+                    }
+
+                    ctx.fillStyle = color;
+                    ctx.fillRect(j * cellSize, i * cellSize, cellSize, cellSize);
+                    
+                    // Grid lines
+                    ctx.strokeStyle = '#000';
+                    ctx.lineWidth = 1;
+                    ctx.strokeRect(j * cellSize, i * cellSize, cellSize, cellSize);
+                }
+            }
+        }
+
+        function showError(message) {
+            errorMsg.textContent = message;
+            errorMsg.style.display = 'block';
+        }
+    </script>
+</body>
+</html>
