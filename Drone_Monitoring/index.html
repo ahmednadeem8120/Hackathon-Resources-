@@ -1,0 +1,171 @@
+/*Code for the Drone Monitoring webapp
+linked with style.css*/
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Drone Monitoring Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css  ">
+</head>
+<body>
+    <nav class="navbar">
+        <button class="nav-btn">Live Drone View</button>
+        <button class="nav-btn active">Grid View</button>
+    </nav>
+
+    <div class="container">
+        <div class="card main-feed">
+            <div class="image-container">
+                <img src="images/Drone_radar_map2.png" alt="Main feed View">
+            </div>
+        </div>
+
+        <div class="right-panel">
+            <div class="card top-card">
+                <div class="drone-image">
+                    <img src="images/Drone_pov.jpg" alt="Drone Camera Feed">
+                </div>
+                <div class="status-section">
+                    <h2 class="section-title">Drone Status</h2>
+                    <div class="status-grid">
+                        <div class="status-item">
+                            <div class="icon battery"></div>
+                            <div class="status-info">
+                                <div class="status-label">Battery</div>
+                                <div class="status-value">87%</div>
+                                <div class="battery-gauge">
+                                    <div class="battery-fill"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="status-item">
+                            <div class="icon altitude"></div>
+                            <div class="status-info">
+                                <div class="status-label">Altitude</div>
+                                <div class="status-value">142 m</div>
+                            </div>
+                        </div>
+                        
+                        <div class="status-item">
+                            <div class="icon speed"></div>
+                            <div class="status-info">
+                                <div class="status-label">Speed</div>
+                                <div class="status-value">24 km/h</div>
+                            </div>
+                        </div>
+                        
+                        <div class="status-item">
+                            <div class="icon signal"></div>
+                            <div class="status-info">
+                                <div class="status-label">Signal Strength</div>
+                                <div class="status-value">Excellent</div>
+                                <div class="signal-bars">
+                                    <div class="signal-bar active"></div>
+                                    <div class="signal-bar active"></div>
+                                    <div class="signal-bar active"></div>
+                                    <div class="signal-bar active"></div>
+                                    <div class="signal-bar active"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="status-item">
+                            <div class="icon payload"></div>
+                            <div class="status-info">
+                                <div class="status-label">Current Payload</div>
+                                <div class="status-value">2.4 kg</div>
+                            </div>
+                        </div>
+                        
+                        <div class="status-item">
+                            <div class="icon vehicle"></div>
+                            <div class="status-info">
+                                <div class="status-label">Vehicle ID</div>
+                                <div class="status-value">DRN-3847</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card emergency-card">
+                <h2 class="section-title">Emergency Protocol</h2>
+                <div class="emergency-actions">
+                    <button class="emergency-btn primary">Return to Base</button>
+                    <button class="emergency-btn primary">Fall Back Operator</button>
+                    <button class="emergency-btn danger">Land Immediately</button>
+                    <button class="emergency-btn success">Switch to Standby</button>
+                </div>
+
+                <div class="divider"></div>
+
+                <div class="alerts">
+                    <div class="alert-item">
+                        <div class="alert-info">
+                            <div class="alert-icon clear"></div>
+                            <div class="alert-text">Obstacle Detection</div>
+                        </div>
+                        <div class="alert-status clear">Clear</div>
+                    </div>
+                    
+                    <div class="alert-item">
+                        <div class="alert-info">
+                            <div class="alert-icon warning"></div>
+                            <div class="alert-text">Weather Alert</div>
+                        </div>
+                        <div class="alert-status warning">Monitoring</div>
+                    </div>
+
+                    <div class="alert-item">
+                        <div class="alert-info">
+                            <div class="alert-icon clear"></div>
+                            <div class="alert-text">Optimal Vehicle</div>
+                        </div>
+                        <div class="alert-status clear">Drones</div>
+                    </div>
+
+                    <div class="alert-item">
+                        <div class="alert-info">
+                            <div class="alert-icon clear"></div>
+                            <div class="alert-text">Customer notified</div>
+                        </div>
+                        <div class="alert-status clear">Yes</div>
+                    </div>
+
+                    <div class="alert-item">
+                        <div class="alert-info">
+                            <div class="alert-icon clear"></div>
+                            <div class="alert-text">Optimum Path</div>
+                        </div>
+                        <div class="alert-status clear">Yes</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const navButtons = document.querySelectorAll('.nav-btn');
+        navButtons.forEach(btn => {
+            btn.addEventListener('click', function() {
+                navButtons.forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        const emergencyBtns = document.querySelectorAll('.emergency-btn');
+        emergencyBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                this.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    this.style.transform = '';
+                }, 150);
+            });
+        });
+    </script>
+</body>
+</html>
