@@ -1,111 +1,97 @@
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Drone Monitoring Dashboard</title>
-        <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-        
-        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
-        <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-        
-        <link rel="stylesheet" href="style.css">
-        
-        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/luxon@3.4.4/build/global/luxon.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon@1.3.1/dist/chartjs-adapter-luxon.min.js"></script>
-    </head>
-    <body>
-        <nav class="navbar">
-            <button class="nav-btn">Live Drone View</button>
-            <button class="nav-btn active">Grid View</button>
-        </nav>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Drone Monitoring Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    
+    <link rel="stylesheet" href="style.css">
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/luxon@3.4.4/build/global/luxon.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon@1.3.1/dist/chartjs-adapter-luxon.min.js"></script>
+</head>
+<body>
+    <nav class="navbar">
+        <button class="nav-btn">Live Drone View</button>
+        <button class="nav-btn active">Grid View</button>
+    </nav>
 
-        <div class="container">
-            <div class="card main-feed">
-                <div class="filter-bar">
-                    <button class="filter-btn active" data-filter="all">All</button>
-                    <button class="filter-btn" data-filter="Active">🟢 Active</button>
-                    <button class="filter-btn" data-filter="Idle">🟡 Idle</button>
-                    <button class="filter-btn" data-filter="Critical">🔴 Critical</button>
-                    <button class="filter-btn" data-filter="Maintenance">🛠️ Maintenance</button>
-                </div>
-                <div id="map"></div>
+    <div class="container">
+        <div class="card main-feed">
+            <div class="filter-bar">
+                <button class="filter-btn active" data-filter="all">All</button>
+                <button class="filter-btn" data-filter="Active">🟢 Active</button>
+                <button class="filter-btn" data-filter="Idle">🟡 Idle</button>
+                <button class="filter-btn" data-filter="Critical">🔴 Critical</button>
+                <button class="filter-btn" data-filter="Maintenance">🛠️ Maintenance</button>
             </div>
-
-            <div class="right-panel">
-                <div class="card top-card">
-                    <div class="card-header">
-                        <div class="tabs">
-                            <button class="tab-btn active" data-tab="status">Drone Status</button>
-                            <button class="tab-btn" data-tab="telemetry">Live Telemetry</button>
-                        </div>
-                    </div>
-
-                    <div class="tab-content active" id="status">
-                        <div class="drone-image">
-                            <div class="card live-feed-card">
-                                <h2 class="section-title">Live Drone Feed</h2>
-                                <div class="video-container">
-                                    <div id="waiting-message">Awaiting Drone Signal...</div>
-                                    <video id="live-video-feed" autoplay playsinline></video>
-                                
-                                    <!-- ADD THESE TWO NEW ELEMENTS -->
-                                    <canvas id="output-canvas" class="output-canvas"></canvas>
-                                    <div id="alert-banner" class="alert-banner"></div>
-                                </div>
-                            </div>
-
-                        </div>
-                        <div class="status-section">
-                            <h2 class="section-title" id="drone-id-title">--</h2>
-                            <div class="status-grid">
-                                <div class="status-item"><div class="status-info"><div class="status-label">Battery</div><div class="status-value" id="status-battery">--%</div><div class="battery-gauge"><div class="battery-fill" id="status-battery-fill"></div></div></div></div>
-                                <div class="status-item"><div class="status-info"><div class="status-label">Altitude</div><div class="status-value" id="status-altitude">-- m</div></div></div>
-                                <div class="status-item"><div class="status-info"><div class="status-label">Speed</div><div class="status-value" id="status-speed">-- km/h</div></div></div>
-                                <div class="status-item"><div class="status-info"><div class="status-label">Signal Strength</div><div class="status-value" id="status-signal">--</div></div></div>
-                                <div class="status-item"><div class="status-info"><div class="status-label">Vehicle ID</div><div class="status-value" id="metrics-id">--</div></div></div>
-                                <div class="status-item"><div class="status-info"><div class="status-label">Status</div><div class="status-value" id="metrics-status">--</div></div></div>
-                                <div class="status-item"><div class="status-info"><div class="status-label">Payload</div><div class="status-value" id="metrics-payload">-- kg</div></div></div>
-                                <div class="status-item"><div class="status-info"><div class="status-label">Wind Speed</div><div class="status-value" id="metrics-wind">--</div></div></div>
-                            </div>
-                        </div>
-                        <button class="emergency-btn primary feed">Live Feed</button>
-                    </div>
-                    <div class="tab-content" id="telemetry">
-                        <div class="telemetry-grid">
-                            <div class="chart-container"><canvas id="batteryChart"></canvas></div>
-                            <div class="chart-container"><canvas id="speedChart"></canvas></div>
-                            <div class="chart-container"><canvas id="signalChart"></canvas></div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card emergency-card">
-                    <h2 class="section-title">Emergency Protocol</h2>
-                    <div class="emergency-actions">
-                        <button class="emergency-btn primary">Return to Base</button>
-                        <button class="emergency-btn primary">Fall Back Operator</button>
-                        <button class="emergency-btn danger">Land Immediately</button>
-                        <button class="emergency-btn success">Stand By</button>
-                    </div>
-                </div>
-
-            </div>
+            <div id="map"></div>
         </div>
 
-        <div id="confirmationModal" class="modal-overlay">
-            <div class="modal-content">
-                <h3 id="modalTitle">Confirm Action</h3>
-                <p id="modalMessage">Are you sure you want to proceed?</p>
-                <div class="modal-actions">
-                    <button id="cancelBtn" class="modal-btn cancel">Cancel</button>
-                    <button id="confirmBtn" class="modal-btn confirm">Confirm</button>
+        <div class="right-panel">
+            <div class="card top-card">
+                <div class="card-header">
+                    <div class="tabs">
+                        <button class="tab-btn active" data-tab="status">Drone Status</button>
+                        <button class="tab-btn" data-tab="telemetry">Live Telemetry</button>
+                    </div>
+                </div>
+                <div class="tab-content active" id="status">
+                    <div class="drone-image">
+                        <img src="images/Drone_pov.jpeg" alt="Drone Camera Feed" onerror="this.onerror=null;this.src='https://placehold.co/400x200/e8e6fd/a0a0a0?text=Drone+POV';">
+                    </div>
+                    <div class="status-section">
+                        <h2 class="section-title" id="drone-id-title">--</h2>
+                        <div class="status-grid">
+                            <div class="status-item"><div class="status-info"><div class="status-label">Battery</div><div class="status-value" id="status-battery">--%</div><div class="battery-gauge"><div class="battery-fill" id="status-battery-fill"></div></div></div></div>
+                            <div class="status-item"><div class="status-info"><div class="status-label">Altitude</div><div class="status-value" id="status-altitude">-- m</div></div></div>
+                            <div class="status-item"><div class="status-info"><div class="status-label">Speed</div><div class="status-value" id="status-speed">-- km/h</div></div></div>
+                            <div class="status-item"><div class="status-info"><div class="status-label">Signal Strength</div><div class="status-value" id="status-signal">--</div></div></div>
+                            <div class="status-item"><div class="status-info"><div class="status-label">Vehicle ID</div><div class="status-value" id="metrics-id">--</div></div></div>
+                            <div class="status-item"><div class="status-info"><div class="status-label">Status</div><div class="status-value" id="metrics-status">--</div></div></div>
+                            <div class="status-item"><div class="status-info"><div class="status-label">Payload</div><div class="status-value" id="metrics-payload">-- kg</div></div></div>
+                            <div class="status-item"><div class="status-info"><div class="status-label">Wind Speed</div><div class="status-value" id="metrics-wind">--</div></div></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-content" id="telemetry">
+                    <div class="telemetry-grid">
+                        <div class="chart-container"><canvas id="batteryChart"></canvas></div>
+                        <div class="chart-container"><canvas id="speedChart"></canvas></div>
+                        <div class="chart-container"><canvas id="signalChart"></canvas></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card emergency-card">
+                <h2 class="section-title">Emergency Protocol</h2>
+                <div class="emergency-actions">
+                    <button class="emergency-btn primary">Return to Base</button>
+                    <button class="emergency-btn primary">Fall Back Operator</button>
+                    <button class="emergency-btn danger">Land Immediately</button>
+                    <button class="emergency-btn success">Stand By</button>
                 </div>
             </div>
         </div>
+    </div>
 
-        <script src="js/drone-data.js"></script>
-        <script src="js/main.js"></script>
-    </body>
-    </html>
+    <div id="confirmationModal" class="modal-overlay">
+        <div class="modal-content">
+            <h3 id="modalTitle">Confirm Action</h3>
+            <p id="modalMessage">Are you sure you want to proceed?</p>
+            <div class="modal-actions">
+                <button id="cancelBtn" class="modal-btn cancel">Cancel</button>
+                <button id="confirmBtn" class="modal-btn confirm">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/drone-data.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
